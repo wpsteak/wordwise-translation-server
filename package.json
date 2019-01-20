@@ -35,6 +35,7 @@
     "difficulty": "^1.1.2",
     "express": "^4.16.2",
     "google-translate-api": "^2.3.0",
+    "google-translate-promise": "^1.0.2",
     "lodash": "^4.17.5"
   }
 }

@@ -1,8 +1,15 @@
 import { createSync, Difficulty } from 'difficulty';
 import { assignIn, chunk, zipObject } from 'lodash';
 
-const googleTranslate = require('google-translate-api');
+var GoogleTranslate = require("google-translate-promise")
+const options = {
+	API_KEY: '',
+	URL: 'https://www.googleapis.com/language/translate/v2',
+	throttle: 500,
+	timeout: 5000
+};
 
+const googleTranslate = new GoogleTranslate(options);
 const difficulty = createSync();
 
 export class Translator {
@@ -21,7 +28,7 @@ export class Translator {
     }
 
     public static async translate(word: string, lang = 'zh-tw') {
-        const { text } = await googleTranslate(word, { to: lang });
+        const { text } = await googleTranslate.translate(word, 'zh-tw', 'en');
         return text;
     }
 
@@ -30,9 +37,9 @@ export class Translator {
         chunks.forEach(chunkedWords => {
             let str = '';
             chunkedWords.forEach(word => {
-                str += `${word}\n`;
+                str += `${word}<br>`;
             });
-            tasks.push(googleTranslate(str, { to: lang }));
+            tasks.push(googleTranslate.translate(str, 'zh-tw', 'en'));
         });
         return tasks;
     }
@@ -43,8 +50,9 @@ export class Translator {
         const results = await Promise.all(tasks);
         const translation = {};
         results.forEach((result, idx) => {
-            const { text } = result;
-            const splittedWords = text.split('\n');
+            // console.log('idx'+idx)
+            // console.log('result'+result)
+            const splittedWords = String(result).split('<br>');
             assignIn(translation, zipObject(chunks[idx], splittedWords));
         });
         return translation;

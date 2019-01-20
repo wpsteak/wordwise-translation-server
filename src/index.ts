@@ -29,12 +29,14 @@ app.post('/api/translate', auth, async (req, res) => {
     try {
         const { words, lang, level } = req.body;
         const difficultWords = Translator.filterDifficultWords(words, level);
+        console.log(difficultWords)
         const translation = await Translator.bulkTranslate(
             difficultWords,
             lang
         );
         res.send(translation);
     } catch (err) {
+        console.log(err)
         res.status(500).send(err.message);
     }
 });
